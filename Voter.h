@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseStrategy.h"
+#include <cstring>
 class Voter :
     public BaseStrategy
 {
@@ -8,9 +9,7 @@ public:
 protected:
     void analysMove(const list<Move**>& moveList, uint32_t me) {
         int32_t *sum = new int32_t[playerNumber()];
-        for (uint32_t i = 0; i < playerNumber(); i++) {
-            sum[i] = 0;
-        }
+        memset(sum, 0, sizeof(int32_t) * playerNumber());
 
         for (auto move : moveList) {
             for (uint32_t i = 0; i < playerNumber(); i++) {

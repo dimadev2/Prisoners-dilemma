@@ -38,6 +38,7 @@ Game::Game(uint32_t playerNumber, StrategyIdx* preferredStrategies) {
 		Players[i] = new Player(i, preferredStrategies[i]);
 	}
 	StratHolder = new StrategyHolder(playerNumber);
+	rounds();
 }
 
 Game::~Game() {
@@ -98,9 +99,6 @@ std::string Game::getInfo() const {
 }
 
 std::string Game::getLastRound() const {
-	if (MoveList.empty()) {
-		return "This is the first move\n";
-	}
 	std::string round;
 	round = "   ";
 	for (uint32_t i = 0; i < PlayerNumber; i++) {

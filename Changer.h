@@ -10,7 +10,7 @@ protected:
         Move** last = moveList.back();
         Move* nw = new Move[playerNumber()];
         for (uint32_t i = 0; i < playerNumber(); i++) {
-            nw[i] = last[i][me] == HELP ? BETRAY : HELP;
+            nw[i] = last[me][i] == HELP ? BETRAY : HELP;
         }
         setPreferredMove(nw);
     }

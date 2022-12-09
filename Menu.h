@@ -43,6 +43,11 @@ namespace commands {
 class Menu
 {
 public:
+	static void start() {
+		Menu menu = Menu();
+		menu.stateMachine();
+	}
+private:
 	Menu();
 
 	void stateMachine();
@@ -62,7 +67,9 @@ public:
 	void printHelp();
 
 	void printCommandError();
-private:
+	
+	void defaultGame();
+
 	Game* CurrentGame;
 	MenuState CurrentState;
 
@@ -99,16 +106,7 @@ void Menu::interpretCommand(std::string& command) {
 		printHelp();
 	}
 	else if (command == commands::defaultGame) {
-		PlayerNumber = 3;
-		delete[] PreferredStrategies;
-		PreferredStrategies = new StrategyIdx[PlayerNumber];
-		PreferredStrategies[0] = PACIFIC;
-		PreferredStrategies[1] = AGRESSOR;
-		PreferredStrategies[2] = REPEATER;
-		delete CurrentGame;
-		CurrentGame = new Game(PlayerNumber, PreferredStrategies);
-		CurrentState = GAME;
-		printHelp();
+		defaultGame();
 	}
 	else if (CurrentState == MENU) {
 		if (command == commands::menu::newGameCommand) {
@@ -122,7 +120,6 @@ void Menu::interpretCommand(std::string& command) {
 	else if (CurrentState == PREGAME) {
 		if (command == commands::pregame::setPlayers) {
 			readPlayerNumber();
-			delete[] PreferredStrategies;
 			PreferredStrategies = new StrategyIdx[PlayerNumber];
 		}
 		else if (command == commands::pregame::setStrategy) {
@@ -186,6 +183,10 @@ void Menu::readPlayerNumber() {
 }
 
 void Menu::readStrategy() {
+	if (PlayerNumber == 0) {
+		std::cout << "\tEnter number of players first\n";
+		return;
+	}
 	std::cout << "\tPlayer Id: ";
 	uint32_t plId;
 	std::cin >> plId;
@@ -261,12 +262,16 @@ void Menu::quitCommand() {
 		CurrentState = QUIT;
 	}
 	else if (CurrentState == PREGAME) {
-		delete[] PreferredStrategies;
+		if (PreferredStrategies != nullptr)
+			delete[] PreferredStrategies;
+		PlayerNumber = 0;
 		CurrentState = MENU;
 	}
 	else if (CurrentState == GAME) {
 		delete CurrentGame;
 		delete[] PreferredStrategies;
+		CurrentGame = nullptr;
+		PreferredStrategies = nullptr;
 		CurrentState = MENU;
 	}
 	printHelp();
@@ -301,6 +306,19 @@ void Menu::printHelp() {
 
 void Menu::printCommandError() {
 	std::cout << "Invalid command" << std::endl;
+	printHelp();
+}
+
+void Menu::defaultGame() {
+	PlayerNumber = 3;
+	delete[] PreferredStrategies;
+	PreferredStrategies = new StrategyIdx[PlayerNumber];
+	PreferredStrategies[0] = VOTER;
+	PreferredStrategies[1] = RANDOM;
+	PreferredStrategies[2] = CHANGER;
+	delete CurrentGame;
+	CurrentGame = new Game(PlayerNumber, PreferredStrategies);
+	CurrentState = GAME;
 	printHelp();
 }
 
